@@ -496,6 +496,20 @@ Map searchWordsInTranslation(
   return {"occurences": result.length, "result": result};
 }
 
+String _removeDiacritics(String text) {
+  return text.replaceAll(RegExp(r'[\u064B-\u0652]'), '');
+}
+
+String _normalizeArabic(String text) {
+  text = _removeDiacritics(text);
+  text = text.replaceAll(RegExp(r'[أإآ]'), 'ا');
+  text = text.replaceAll('ى', 'ي');
+  text = text.replaceAll('ؤ', 'و');
+  text = text.replaceAll('ئ', 'ي');
+  text = text.replaceAll('ة', 'ه');
+  return text;
+}
+
 ///Takes a list of words [words] and returns a map containing no. of occurences and result of the word search in the arabic quran text.
 ///
 ///You have to include the harakaat (diacritics) in the words
@@ -505,6 +519,37 @@ Map searchWordsInTranslation(
 /// searchWords(["لِّلَّهِ","وَٱللَّهُ","ٱللَّهُ"])
 ///```
 Map searchWords(List<String> words) {
+  List<Map> result = [];
+
+  // 🔥 نطبع الكلمات المدخلة مرة واحدة فقط
+  List<String> normalizedWords = words
+      .map((w) => _normalizeArabic(w.toLowerCase()))
+      .toList();
+
+  quranData.forEach((surahNumber, verses) {
+    verses.forEach((verseNumber, content) {
+      // 🔥 نطبع الآية مرة واحدة
+      String normalizedContent = _normalizeArabic(content.toLowerCase());
+
+      bool exist = false;
+
+      for (var word in normalizedWords) {
+        if (normalizedContent.contains(word)) {
+          exist = true;
+          break;
+        }
+      }
+
+      if (exist) {
+        result.add({"surah": surahNumber, "verse": verseNumber});
+      }
+    });
+  });
+
+  return {"occurences": result.length, "result": result};
+}
+
+Map searchWordsx(List<String> words) {
   List<Map> result = [];
 
   quranData.forEach((surahNumber, verses) {
