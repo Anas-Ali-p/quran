@@ -663,3 +663,6 @@ class RandomVerse {
     translation = getVerseTranslation(surahNumber, verseNumber);
   }
 }
+
+/// Returns the total number of Ahzab (hizb) in the Quran.
+int getTotalAhzabCount() => totalAhzabCount;
