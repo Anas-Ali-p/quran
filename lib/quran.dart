@@ -17,10 +17,12 @@ import './translations/spanish.dart';
 import './translations/swedish.dart';
 
 import 'juz_data.dart';
+import 'juz_names.dart';
 import 'page_data.dart';
 import 'quran_text.dart';
 import 'sajdah_verses.dart';
 import 'surah_data.dart';
+import 'ahzab_data.dart';
 
 ///Takes [pageNumber] and returns a list containing Surahs and the starting and ending Verse numbers in that page
 ///
@@ -101,6 +103,21 @@ int getJuzNumber(int surahNumber, int verseNumber) {
     }
   }
   return -1;
+}
+
+/// Returns the name of a Juz (part) instead of its number.
+///
+/// Example:
+/// ```dart
+/// getJuzName(1); // returns 'الجزء الأول' (default Arabic)
+/// getJuzName(5, arabic: false); // returns 'Juz 5'
+/// ```
+String getJuzName(int juzNumber, {bool arabic = true}) {
+  if (juzNumber < 1 || juzNumber > 30) throw "Invalid juzNumber";
+
+  // juzNumber is validated, use direct index into juzNames
+  final entry = juzNames[juzNumber - 1];
+  return arabic ? entry['arabic'] : entry['english'];
 }
 
 ///Takes [juzNumber] and returns a map which contains keys as surah number and value as a list containing starting and ending verse numbers.
@@ -284,6 +301,19 @@ List<int> getSurahPages(int surahNumber) {
     }
   }
   return pages;
+}
+
+/// Returns the two hizb numbers that compose a given juz.
+List<int> getAhzabFromJuz(int juzNumber) {
+  if (juzNumber < 1 || juzNumber > 30) throw "Invalid juzNumber";
+  return List<int>.from(ahzabByJuz[juzNumber - 1]['ahzab']);
+}
+
+/// Returns quarter display names for a given quarter index (1-4)
+String getHizbQuarterName(int quarterIndex, {bool arabic = true}) {
+  if (quarterIndex < 1 || quarterIndex > 4) throw "Invalid quarterIndex";
+  final q = hizbQuarterNames[quarterIndex - 1];
+  return arabic ? q['arabic']! : q['english']!;
 }
 
 enum SurahSeperator {
