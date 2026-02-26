@@ -333,6 +333,55 @@ List<String> getVersesTextByPage(
   return verses;
 }
 
+/// ترجّع قائمة من الآيات في الصفحة، كل آية كخريطة مستقلة
+List<Map<String, dynamic>> getVersesByPageWithSurahSeparator(
+  int pageNumber, {
+  bool verseEndSymbol = false,
+  bool includeSurahName = true, // نضيف اسم السورة كبداية
+  SurahSeperator surahSeperator = SurahSeperator.surahNameArabic,
+}) {
+  if (pageNumber > 604 || pageNumber <= 0) throw "Invalid pageNumber";
+
+  List<Map<String, dynamic>> verses = [];
+  final pageData = getPageData(pageNumber);
+
+  for (var data in pageData) {
+    // إضافة فاصل السورة إذا مطلوب
+    if (includeSurahName) {
+      String surahName = "";
+      switch (surahSeperator) {
+        case SurahSeperator.surahName:
+          surahName = getSurahName(data["surah"]);
+          break;
+        case SurahSeperator.surahNameArabic:
+          surahName = getSurahNameArabic(data["surah"]);
+          break;
+        case SurahSeperator.surahNameEnglish:
+          surahName = getSurahNameEnglish(data["surah"]);
+          break;
+        default:
+          surahName = getSurahNameArabic(data["surah"]);
+      }
+      verses.add({
+        "type": "surah_separator",
+        "text": surahName,
+        "surah": data["surah"],
+      });
+    }
+
+    for (int j = data["start"]; j <= data["end"]; j++) {
+      verses.add({
+        "type": "verse",
+        "surah": data["surah"],
+        "verse": j,
+        "text": getVerse(data["surah"], j, verseEndSymbol: verseEndSymbol),
+      });
+    }
+  }
+
+  return verses;
+}
+
 ///Supported audio reciters for CDN islamic.network
 ///Defaults to [Reciter.arAlafasy] to preserve existing behavior.
 enum Reciter {
