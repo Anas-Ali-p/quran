@@ -392,18 +392,28 @@ List<Map<String, dynamic>> getVersesByPageWithSurahSeparator(
         default:
           surahName = getSurahNameArabic(data["surah"]);
       }
+
+      final int startJuz = getJuzNumber(data["surah"], data["start"]);
+
       verses.add({
         "type": "surah_separator",
         "text": surahName,
         "surah": data["surah"],
+        // إضافة معلومات الجزء (الجزء رقم واسم الجزء بالعربية)
+        "juz": startJuz,
+        "juzName": startJuz > 0 ? getJuzName(startJuz) : null,
       });
     }
 
     for (int j = data["start"]; j <= data["end"]; j++) {
+      final int juzNumber = getJuzNumber(data["surah"], j);
       verses.add({
         "type": "verse",
         "surah": data["surah"],
         "verse": j,
+        // رقم الجزء واسم الجزء (null إذا غير موجود)
+        "juz": juzNumber,
+        "juzName": juzNumber > 0 ? getJuzName(juzNumber) : null,
         "text": getVerse(data["surah"], j, verseEndSymbol: verseEndSymbol),
       });
     }
