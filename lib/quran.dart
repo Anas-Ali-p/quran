@@ -407,9 +407,11 @@ List<Map<String, dynamic>> getVersesByPageWithSurahSeparator(
 
     for (int j = data["start"]; j <= data["end"]; j++) {
       final int juzNumber = getJuzNumber(data["surah"], j);
+      final int surahNumber = data["surah"];
       verses.add({
         "type": "verse",
         "surah": data["surah"],
+        "surahNumber": surahNumber,
         "verse": j,
         // رقم الجزء واسم الجزء (null إذا غير موجود)
         "juz": juzNumber,
